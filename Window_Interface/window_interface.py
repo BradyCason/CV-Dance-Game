@@ -13,12 +13,18 @@ def open_window():
         ret, frame = cap.read()
         if not ret:
             break
+        
+        # Find human pose
+        results = humanTracker.find_human(frame)
 
+        # Draw the pose on the frame
+        humanTracker.draw_pose(frame, results)
+        
         cv2.imshow('Pose Tracking', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 if __name__ == "__main__":
-    c = human_tracker.HumanTracker()
+    humanTracker = human_tracker.HumanTracker()
     open_window()
