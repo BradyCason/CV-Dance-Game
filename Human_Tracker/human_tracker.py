@@ -34,3 +34,12 @@ class HumanTracker:
             if left_wrist.y < left_shoulder.y and right_wrist.y < right_shoulder.y:
                 return True
         return False
+    
+    def check_left_leg_90(self):
+        if self.processed_pose.pose_landmarks:
+            landmarks = self.processed_pose.pose_landmarks.landmark
+            left_hip = landmarks[self.mp_pose.PoseLandmark.LEFT_HIP]
+            left_ankle = landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE]
+            
+            return abs(left_hip.y - left_ankle.y) < 0.5
+        return False
