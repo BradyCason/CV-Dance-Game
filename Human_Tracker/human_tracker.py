@@ -34,3 +34,25 @@ class HumanTracker:
             if left_wrist.y < left_shoulder.y and right_wrist.y < right_shoulder.y:
                 return True
         return False
+    
+    def check_left_leg_90(self):
+        #Check if the left leg is about parallel with the person's hip
+        if self.processed_pose.pose_landmarks:
+            landmarks = self.processed_pose.pose_landmarks.landmark
+            left_hip = landmarks[self.mp_pose.PoseLandmark.LEFT_HIP]
+            left_knee = landmarks[self.mp_pose.PoseLandmark.LEFT_KNEE]
+            left_ankle = landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE]
+            
+            return abs(left_hip.y - left_ankle.y) < 0.1 and abs(left_knee.y - left_ankle.y) < 0.1
+        return False
+    
+    def check_right_leg_90(self):
+        #Check if the right leg is about parallel with the person's hip
+        if self.processed_pose.pose_landmarks:
+            landmarks = self.processed_pose.pose_landmarks.landmark
+            right_hip = landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP]
+            right_knee = landmarks[self.mp_pose.PoseLandmark.RIGHT_KNEE]
+            right_ankle = landmarks[self.mp_pose.PoseLandmark.RIGHT_ANKLE]
+            
+            return abs(right_hip.y - right_ankle.y) < 0.1 and abs(right_knee.y - right_ankle.y) < 0.1
+        return False
