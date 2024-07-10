@@ -3,30 +3,44 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-def window():
-   app = QApplication(sys.argv)
-   win = QDialog()
-   b1 = QPushButton(win)
-   b1.setText("Button1")
-   b1.move(50,20)
-   b1.clicked.connect(b1_clicked)
-   
-   b2 = QPushButton(win)
-   b2.setText("Button2")
-   b2.move(50,50)
-   b2.clicked.connect(b2_clicked)
-   
-   win.setGeometry(100,100,200,100)
+class MainWindow(QMainWindow):
+   count = 0
 
-   win.setWindowTitle("PyQt5")
-   win.show()
+   def __init__(self, parent = None):
+      super(MainWindow, self).__init__(parent)
+      self.mdi = QMdiArea()
+      self.setCentralWidget(self.mdi)
+      bar = self.menuBar()
+
+      file = bar.addMenu("File")
+      file.addAction("New")
+      file.addAction("cascade")
+      file.addAction("Tiled")
+      file.triggered[QAction].connect(self.windowaction)
+      self.setWindowTitle("MDI demo")
+
+   def windowaction(self, q):
+      print ("triggered")
+   
+      if q.text() == "New":
+         MainWindow.count = MainWindow.count+1
+         sub = QMdiSubWindow()
+         sub.setWidget(QTextEdit())
+         sub.setWindowTitle("subwindow"+str(MainWindow.count))
+         self.mdi.addSubWindow(sub)
+         sub.show()
+
+      if q.text() == "cascade":
+         self.mdi.cascadeSubWindows()
+
+      if q.text() == "Tiled":
+         self.mdi.tileSubWindows()
+
+def main():
+   app = QApplication(sys.argv)
+   ex = MainWindow()
+   ex.show()
    sys.exit(app.exec_())
 
-def b1_clicked():
-   print ("Button 1 clicked")
-
-def b2_clicked():
-   print ("Button 2 clicked")
-
 if __name__ == '__main__':
-   window()
+   main()
