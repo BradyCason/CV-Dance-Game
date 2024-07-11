@@ -1,46 +1,44 @@
 import sys
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+import cv2
+from PyQt5 import QtCore, QtGui, QtWidgets
+from game_screen1 import Ui_MainWindow
 
-class MainWindow(QMainWindow):
-   count = 0
+import os
+os.chdir(os.path.dirname(__file__))
 
-   def __init__(self, parent = None):
-      super(MainWindow, self).__init__(parent)
-      self.mdi = QMdiArea()
-      self.setCentralWidget(self.mdi)
-      bar = self.menuBar()
+class DanceGame:
+   def __init__(self):
+      # Setup Video Capture
+      self.video_capture = cv2.VideoCapture(0)
 
-      file = bar.addMenu("File")
-      file.addAction("New")
-      file.addAction("cascade")
-      file.addAction("Tiled")
-      file.triggered[QAction].connect(self.windowaction)
-      self.setWindowTitle("MDI demo")
+      # Setup UI
+      app = QtWidgets.QApplication(sys.argv)
+      MainWindow = QtWidgets.QMainWindow()
+      self.ui = Ui_MainWindow()
+      self.ui.setupUi(MainWindow)
 
-   def windowaction(self, q):
-      print ("triggered")
-   
-      if q.text() == "New":
-         MainWindow.count = MainWindow.count+1
-         sub = QMdiSubWindow()
-         sub.setWidget(QTextEdit())
-         sub.setWindowTitle("subwindow"+str(MainWindow.count))
-         self.mdi.addSubWindow(sub)
-         sub.show()
+      # Setup timer for player video
+      self.timer = QtCore.QTimer()
+      self.timer.timeout.connect(self.update_player_frame)
+      self.timer.start(30)
 
-      if q.text() == "cascade":
-         self.mdi.cascadeSubWindows()
+      # Initialize the target image
+      self.set_target_frame("gottem.png")
 
-      if q.text() == "Tiled":
-         self.mdi.tileSubWindows()
+      MainWindow.show()
+      sys.exit(app.exec_())
 
-def main():
-   app = QApplication(sys.argv)
-   ex = MainWindow()
-   ex.show()
-   sys.exit(app.exec_())
+   def update_player_frame(self):
+      ret, frame = self.video_capture.read()
+      if ret:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            height, width, channel = frame.shape
+            step = channel * width
+            q_img = QtGui.QImage(frame.data, width, height, step, QtGui.QImage.Format_RGB888)
+            self.ui.player_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
+
+   def set_target_frame(self, img_name):
+       self.ui.target_img.setPixmap(QtGui.QPixmap("Target_Poses/" + img_name))
 
 if __name__ == '__main__':
-   main()
+   dance_game = DanceGame()
