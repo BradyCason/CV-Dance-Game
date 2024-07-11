@@ -50,6 +50,24 @@ class HumanTracker:
 
         return angle_degrees
     
+    def calculate_angle3(self, point1, point2, point3):
+        #Caculates the angle between three points using dot product with two vectors
+        #Make the vectors
+        vector1 = (point1.x - point2.x, point1.y - point2.y)
+        vector2 = (point3.x - point2.x, point3.y - point2.y)
+
+        #Dot product and magnitude calculations
+        dot_product = vector1[0] * vector2[0] + vector1[1] * vector2[1]
+        magnitude1 = math.sqrt(vector1[0] ** 2 + vector1[1] ** 2)
+        magnitude2 = math.sqrt(vector2[0] ** 2 + vector2[1] ** 2)
+
+        #Angle in radians and then degrees
+        angle_radians = math.acos(dot_product / (magnitude1 * magnitude2))
+        angle_degrees = math.degrees(angle_radians)
+
+        return angle_degrees
+        
+    
     def check_left_leg_90(self):
         #Check if the left leg is about parallel with the person's hip
         if self.processed_pose.pose_landmarks:
