@@ -19,7 +19,6 @@ class DanceGame:
 
       # Initialize game variables
       self.pose_time = 2000
-      self.choose_new_pose()
       self.success_phrases = ["Perfect!", "Good!", "You Got It!", "Nice!", "Well Done!"]
       self.failure_phrases = ["Miss!", "Whoops!", "Incorrect", "Fail"]
 
@@ -45,8 +44,8 @@ class DanceGame:
       self.pose_timer.timeout.connect(self.pose_timer_loop)
       self.pose_timer.start(self.pose_time)
 
-      # Initialize the target image
-      self.set_target_frame("gottem.png")
+      # Initialize the pose and the target image
+      self.choose_new_pose()
 
       MainWindow.show()
       sys.exit(app.exec_())
@@ -95,6 +94,7 @@ class DanceGame:
 
    def choose_new_pose(self):
       self.current_pose = random.randrange(self.pose_data.shape[0])
+      self.set_target_frame(self.pose_data["ImageName"][self.current_pose])
    
    def set_new_pose_timer(self, new_time):
       self.pose_timer.start(new_time)
