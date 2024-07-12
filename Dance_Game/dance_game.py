@@ -20,6 +20,8 @@ class DanceGame:
       # Initialize game variables
       self.pose_time = 2000
       self.current_pose = random.randrange(self.pose_data.shape[0])
+      self.success_phrases = ["Perfect!", "Good!", "You Got It!", "Nice!", "Well Done!"]
+      self.failure_phrases = ["Miss!", "Whoops!", "Incorrect", "Fail"]
 
       # Initialize human tracker
       self.tracker = human_tracker.HumanTracker()
@@ -79,7 +81,13 @@ class DanceGame:
    def check_pose(self):
       print(self.pose_data)
       check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
-      print(check_move_method())
+      
+      if check_move_method():
+         self.ui.move_status.setText(random.choice(self.success_phrases))
+         self.ui.move_status.setStyleSheet("QLabel {background-color: green;}")
+      else:
+         self.ui.move_status.setText(random.choice(self.failure_phrases))
+         self.ui.move_status.setStyleSheet("QLabel {background-color: red;}")
 
 if __name__ == '__main__':
    dance_game = DanceGame()
