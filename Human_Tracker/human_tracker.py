@@ -129,3 +129,31 @@ class HumanTracker:
             #Check both sides, if dabbing on right or left, it will return True
             return (left_wrist_above_nose and left_wrist_extended and right_arm_check) or (right_wrist_above_nose and right_wrist_extended and left_arm_check)
         return False
+    
+    def check_right_leg_opposite90(self):
+        #Check if the right leg is about 90 degrees on opposite side of body
+        if self.processed_pose.pose_landmarks:
+            landmarks = self.processed_pose.pose_landmarks.landmark
+            right_hip = landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP]
+            right_knee = landmarks[self.mp_pose.PoseLandmark.RIGHT_KNEE]
+            right_ankle = landmarks[self.mp_pose.PoseLandmark.RIGHT_ANKLE]
+           
+            hip_to_knee_angle = self.calculate_angle(right_hip, right_ankle)
+            knee_to_ankle_angle = self.calculate_angle(right_knee, right_ankle)
+            if (hip_to_knee_angle <= 70 or hip_to_knee_angle >= 315) and (knee_to_ankle_angle <= 70 or knee_to_ankle_angle >= 315):
+                return True
+        return False
+    
+    def check_left_leg_opposite90(self):
+        #Check if the left leg is about parallel with the person's hip on opposite side
+        if self.processed_pose.pose_landmarks:
+            landmarks = self.processed_pose.pose_landmarks.landmark
+            left_hip = landmarks[self.mp_pose.PoseLandmark.LEFT_HIP]
+            left_knee = landmarks[self.mp_pose.PoseLandmark.LEFT_KNEE]
+            left_ankle = landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE]
+           
+            hip_to_knee_angle = self.calculate_angle(left_hip, left_knee)
+            knee_to_ankle_angle = self.calculate_angle(left_knee, left_ankle)
+            if (120 <= hip_to_knee_angle <= 225) and (120 <= knee_to_ankle_angle <= 225):
+                return True
+        return False

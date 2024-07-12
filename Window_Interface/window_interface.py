@@ -22,8 +22,8 @@ def open_window():
         
         cv2.imshow('Pose Tracking', frame)
 
-        print("Dabbing: " + str(tracker.check_if_dabbing()) + ". Hands up: " + str(tracker.check_hands_up()) + ". Left leg up: " + str(tracker.check_left_leg_90()) + ". Right leg up: " + str(tracker.check_right_leg_90()))
-        
+        #print("Dabbing: " + str(tracker.check_if_dabbing()) + ". Hands up: " + str(tracker.check_hands_up()) + ". Left leg up: " + str(tracker.check_left_leg_90()) + ". Right leg up: " + str(tracker.check_right_leg_90()))
+        print(str(tracker.check_left_leg_opposite90()))
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
