@@ -19,7 +19,7 @@ class DanceGame:
 
       # Initialize game variables
       self.pose_time = 2000
-      self.current_pose = random.randrange(self.pose_data.shape[0])
+      self.choose_new_pose()
       self.success_phrases = ["Perfect!", "Good!", "You Got It!", "Nice!", "Well Done!"]
       self.failure_phrases = ["Miss!", "Whoops!", "Incorrect", "Fail"]
 
@@ -42,7 +42,7 @@ class DanceGame:
 
       # Setup timer for pose
       self.pose_timer = QtCore.QTimer()
-      self.pose_timer.timeout.connect(self.check_pose)
+      self.pose_timer.timeout.connect(self.pose_timer_loop)
       self.pose_timer.start(self.pose_time)
 
       # Initialize the target image
@@ -78,6 +78,10 @@ class DanceGame:
    def update_time_bar(self):
        self.ui.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_timer.interval() * 100)
 
+   def pose_timer_loop(self):
+      self.check_pose()
+      self.choose_new_pose()
+
    def check_pose(self):
       print(self.pose_data)
       check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
@@ -88,6 +92,12 @@ class DanceGame:
       else:
          self.ui.move_status.setText(random.choice(self.failure_phrases))
          self.ui.move_status.setStyleSheet("QLabel {background-color: red;}")
+
+   def choose_new_pose(self):
+      self.current_pose = random.randrange(self.pose_data.shape[0])
+   
+   def set_new_pose_timer(self, new_time):
+      self.pose_timer.start(new_time)
 
 if __name__ == '__main__':
    dance_game = DanceGame()
