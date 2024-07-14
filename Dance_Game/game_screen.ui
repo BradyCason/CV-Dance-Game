@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <widget class="QWidget" name="Form">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1008</width>
-    <height>753</height>
+    <width>1012</width>
+    <height>762</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,8 +103,11 @@
     </item>
     <item row="3" column="0">
      <widget class="QProgressBar" name="time_bar">
+      <property name="maximum">
+       <number>1</number>
+      </property>
       <property name="value">
-       <number>24</number>
+       <number>-1</number>
       </property>
       <property name="textVisible">
        <bool>false</bool>
@@ -146,8 +149,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1008</width>
-     <height>26</height>
+     <width>1012</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

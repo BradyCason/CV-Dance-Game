@@ -12,10 +12,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("Just Prance")
-        MainWindow.resize(1008, 753)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.setGeometry(QtCore.QRect(0, 0, 1012, 762))
+        self.centralwidget = QtWidgets.QWidget(Form)
         self.centralwidget.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(1)
@@ -24,6 +24,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setSpacing(5)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.title = QtWidgets.QLabel(self.centralwidget)
@@ -66,7 +67,8 @@ class Ui_MainWindow(object):
         self.target_img.setObjectName("target_img")
         self.gridLayout_2.addWidget(self.target_img, 2, 0, 1, 1)
         self.time_bar = QtWidgets.QProgressBar(self.centralwidget)
-        self.time_bar.setProperty("value", 24)
+        self.time_bar.setMaximum(1)
+        self.time_bar.setProperty("value", -1)
         self.time_bar.setTextVisible(False)
         self.time_bar.setObjectName("time_bar")
         self.gridLayout_2.addWidget(self.time_bar, 3, 0, 1, 1)
@@ -89,21 +91,18 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setColumnStretch(0, 1)
         self.gridLayout_2.setColumnStretch(1, 1)
         self.gridLayout_2.setRowStretch(2, 1)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1008, 26))
+        self.menubar = QtWidgets.QMenuBar(Form)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1012, 21))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar = QtWidgets.QStatusBar(Form)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        Form.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.title.setText(_translate("MainWindow", "Just Prance"))
         self.score_label.setText(_translate("MainWindow", "Lives: _    Score: _"))
         self.dance_name.setText(_translate("MainWindow", "Dab"))
@@ -115,8 +114,8 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
+    Form = QtWidgets.QWidget()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    ui.setupUi(Form)
+    Form.show()
     sys.exit(app.exec_())

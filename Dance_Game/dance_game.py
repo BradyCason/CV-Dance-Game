@@ -1,8 +1,8 @@
 import sys
 import os
 import cv2
-from PyQt5 import QtCore, QtGui, QtWidgets
-from game_screen1 import Ui_MainWindow
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+#from game_screen2 import Ui_MainWindow
 import pandas
 import random
 
@@ -12,8 +12,12 @@ from Human_Tracker import human_tracker
 
 os.chdir(os.path.dirname(__file__))
 
-class DanceGame:
+class DanceGame(QtWidgets.QWidget):
    def __init__(self):
+      super(DanceGame, self).__init__()
+      self.setWindowTitle("Just Prance")
+      uic.loadUi("game_screen2.ui", self)
+
       # Get pose data from csv file
       self.pose_data = pandas.read_csv("poses.csv")
 
@@ -28,12 +32,6 @@ class DanceGame:
       # Setup Video Capture
       self.video_capture = cv2.VideoCapture(0)
 
-      # Setup UI
-      app = QtWidgets.QApplication(sys.argv)
-      MainWindow = QtWidgets.QMainWindow()
-      self.ui = Ui_MainWindow()
-      self.ui.setupUi(MainWindow)
-
       # Setup timer for player video
       self.game_timer = QtCore.QTimer()
       self.game_timer.timeout.connect(self.game_timer_loop)
@@ -46,9 +44,6 @@ class DanceGame:
 
       # Initialize the pose and the target image
       self.choose_new_pose()
-
-      MainWindow.show()
-      sys.exit(app.exec_())
 
    def game_timer_loop(self):
        self.update_player_frame()
@@ -69,13 +64,13 @@ class DanceGame:
             height, width, channel = frame.shape
             step = channel * width
             q_img = QtGui.QImage(frame.data, width, height, step, QtGui.QImage.Format_RGB888)
-            self.ui.player_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
+            self.player_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
 
    def set_target_frame(self, img_name):
-       self.ui.target_img.setPixmap(QtGui.QPixmap("Target_Poses/" + img_name))
+       self.target_img.setPixmap(QtGui.QPixmap("Target_Poses/" + img_name))
 
    def update_time_bar(self):
-       self.ui.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_timer.interval() * 100)
+       self.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_timer.interval() * 100)
 
    def pose_timer_loop(self):
       self.check_pose()
@@ -86,11 +81,11 @@ class DanceGame:
       check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
       
       if check_move_method():
-         self.ui.move_status.setText(random.choice(self.success_phrases))
-         self.ui.move_status.setStyleSheet("QLabel {background-color: green;}")
+         self.move_status.setText(random.choice(self.success_phrases))
+         self.move_status.setStyleSheet("QLabel {background-color: green;}")
       else:
-         self.ui.move_status.setText(random.choice(self.failure_phrases))
-         self.ui.move_status.setStyleSheet("QLabel {background-color: red;}")
+         self.move_status.setText(random.choice(self.failure_phrases))
+         self.move_status.setStyleSheet("QLabel {background-color: red;}")
 
    def choose_new_pose(self):
       self.current_pose = random.randrange(self.pose_data.shape[0])
@@ -100,4 +95,7 @@ class DanceGame:
       self.pose_timer.start(new_time)
 
 if __name__ == '__main__':
-   dance_game = DanceGame()
+   app = QtWidgets.QApplication(sys.argv)
+   MainWindow = DanceGame()
+   MainWindow.show()
+   sys.exit(app.exec_())
