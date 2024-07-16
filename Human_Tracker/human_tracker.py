@@ -24,17 +24,48 @@ class HumanTracker:
                 self.processed_pose.pose_landmarks,
                 self.mp_pose.POSE_CONNECTIONS
             )
-
+            
+    def update_body_parts(self):
+        #This grabs all of the body parts and updates there information
+        landmarks = self.processed_pose.pose_landmarks.landmark
+        self.nose = landmarks[self.mp_pose.PoseLandmark.NOSE]
+        self.left_eye_inner = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE_INNER]
+        self.left_eye = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE]
+        self.left_eye_outer = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE_OUTER]
+        self.right_eye_inner = landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE_INNER]
+        self.right_eye = landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE]
+        self.right_eye_outer = landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE_OUTER]
+        self.left_ear = landmarks[self.mp_pose.PoseLandmark.LEFT_EAR]
+        self.right_ear = landmarks[self.mp_pose.PoseLandmark.RIGHT_EAR]
+        self.mouth_left = landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT]
+        self.mouth_right = landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT]
+        self.left_shoulder = landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER]
+        self.right_shoulder = landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER]
+        self.left_elbow = landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW]
+        self.right_elbow = landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW]
+        self.left_wrist = landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST]
+        self.right_wrist = landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST]
+        self.left_pinky = landmarks[self.mp_pose.PoseLandmark.LEFT_PINKY]
+        self.right_pinky = landmarks[self.mp_pose.PoseLandmark.RIGHT_PINKY]
+        self.left_index = landmarks[self.mp_pose.PoseLandmark.LEFT_INDEX]
+        self.right_index = landmarks[self.mp_pose.PoseLandmark.RIGHT_INDEX]
+        self.left_thumb = landmarks[self.mp_pose.PoseLandmark.LEFT_THUMB]
+        self.right_thumb = landmarks[self.mp_pose.PoseLandmark.RIGHT_THUMB]
+        self.left_hip = landmarks[self.mp_pose.PoseLandmark.LEFT_HIP]
+        self.right_hip = landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP]
+        self.left_knee = landmarks[self.mp_pose.PoseLandmark.LEFT_KNEE]
+        self.right_knee = landmarks[self.mp_pose.PoseLandmark.RIGHT_KNEE]
+        self.left_ankle = landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE]
+        self.right_ankle = landmarks[self.mp_pose.PoseLandmark.RIGHT_ANKLE]
+        self.left_heel = landmarks[self.mp_pose.PoseLandmark.LEFT_HEEL]
+        self.right_heel = landmarks[self.mp_pose.PoseLandmark.RIGHT_HEEL]
+        self.left_foot_index = landmarks[self.mp_pose.PoseLandmark.LEFT_FOOT_INDEX]
+        self.right_foot_index = landmarks[self.mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
+        
     def check_hands_up(self):
         if self.processed_pose.pose_landmarks:
-            landmarks = self.processed_pose.pose_landmarks.landmark
-            left_wrist = landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST]
-            right_wrist = landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST]
-            left_shoulder = landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER]
-            right_shoulder = landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER]
-
-
-            if left_wrist.y < left_shoulder.y and right_wrist.y < right_shoulder.y:
+            self.update_body_parts()
+            if self.check_left_arm_up() and self.check_right_arm_up():
                 return True
         return False
    
@@ -75,17 +106,48 @@ class HumanTracker:
 
         return angle_degrees
        
-   
+    def check_left_arm_up(self):
+        #Check if the left arm is straight up
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+            angle = self.calculate_angle(self.left_shoulder, self.left_wrist)
+            if (250 <= angle <= 290):
+                return True
+        return False
+    
+    def check_right_arm_up(self):
+        #Check if the right arm is straight up
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+            angle = self.calculate_angle(self.right_shoulder, self.right_wrist)
+            if (250 <= angle <= 290):
+                return True
+        return False
+    
+    def check_left_arm_90(self):
+        #Checks if the left arm is straight out at 90 degrees
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+            angle = self.calculate_angle(self.left_shoulder, self.left_wrist)
+            if (angle >= 315 or angle <= 45):
+                return True
+        return False
+    
+    def check_right_arm_90(self):
+        #Checks if the right arm is straight out at 90 degrees
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+            angle = self.calculate_angle(self.right_shoulder, self.right_wrist)
+            if (135 <= angle <= 225):
+                return True
+        return False
+            
     def check_left_leg_90(self):
         #Check if the left leg is about parallel with the person's hip
         if self.processed_pose.pose_landmarks:
-            landmarks = self.processed_pose.pose_landmarks.landmark
-            left_hip = landmarks[self.mp_pose.PoseLandmark.LEFT_HIP]
-            left_knee = landmarks[self.mp_pose.PoseLandmark.LEFT_KNEE]
-            left_ankle = landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE]
-           
-            hip_to_knee_angle = self.calculate_angle(left_hip, left_knee)
-            knee_to_ankle_angle = self.calculate_angle(left_knee, left_ankle)
+            self.update_body_parts()
+            hip_to_knee_angle = self.calculate_angle(self.left_hip, self.left_knee)
+            knee_to_ankle_angle = self.calculate_angle(self.left_knee, self.left_ankle)
             if (hip_to_knee_angle <= 45 or hip_to_knee_angle >= 315) and (knee_to_ankle_angle <= 45 or knee_to_ankle_angle >= 315):
                 return True
         return False
@@ -93,13 +155,9 @@ class HumanTracker:
     def check_right_leg_90(self):
         #Check if the right leg is about parallel with the person's hip
         if self.processed_pose.pose_landmarks:
-            landmarks = self.processed_pose.pose_landmarks.landmark
-            right_hip = landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP]
-            right_knee = landmarks[self.mp_pose.PoseLandmark.RIGHT_KNEE]
-            right_ankle = landmarks[self.mp_pose.PoseLandmark.RIGHT_ANKLE]
-           
-            hip_to_knee_angle = self.calculate_angle(right_hip, right_ankle)
-            knee_to_ankle_angle = self.calculate_angle(right_knee, right_ankle)
+            self.update_body_parts()
+            hip_to_knee_angle = self.calculate_angle(self.right_hip, self.right_ankle)
+            knee_to_ankle_angle = self.calculate_angle(self.right_knee, self.right_ankle)
             if (135 <= hip_to_knee_angle <= 225) and (135 <= knee_to_ankle_angle <= 225):
                 return True
         return False
@@ -107,24 +165,18 @@ class HumanTracker:
     def check_if_dabbing(self):
         #Check if the person is dabbing
         if self.processed_pose.pose_landmarks:
-            landmarks = self.processed_pose.pose_landmarks.landmark
-            left_wrist = landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST]
-            right_wrist = landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST]
-            left_elbow = landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW]
-            right_elbow = landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW]
-            nose = landmarks[self.mp_pose.PoseLandmark.NOSE]
-
+            self.update_body_parts()
             #Checking the left dab first,
             # which involves checking the left wrist being in the right position in relation to the nose and left elbow first
-            left_wrist_above_nose = left_wrist.y < nose.y
-            left_wrist_extended = left_wrist.x < left_elbow.x
+            left_wrist_above_nose = self.left_wrist.y < self.nose.y
+            left_wrist_extended = self.left_wrist.x < self.left_elbow.x
             #Then checking if right wrist is farther away than the right elbow and the angle is correct
-            right_arm_check = right_wrist.x < right_elbow.x and (180 <= self.calculate_angle(right_elbow, right_wrist) <= 240)
+            right_arm_check = self.right_wrist.x < self.right_elbow.x and (180 <= self.calculate_angle(self.right_elbow, self.right_wrist) <= 240)
            
             #Then check the right dab
-            right_wrist_above_nose = right_wrist.y < nose.y
-            right_wrist_extended = right_wrist.x > right_elbow.x
-            left_arm_check = left_wrist.x > left_elbow.x and (self.calculate_angle(left_elbow, left_wrist) >= 300)
+            right_wrist_above_nose = self.right_wrist.y < self.nose.y
+            right_wrist_extended = self.right_wrist.x > self.right_elbow.x
+            left_arm_check = self.left_wrist.x > self.left_elbow.x and (self.calculate_angle(self.left_elbow, self.left_wrist) >= 300)
            
             #Check both sides, if dabbing on right or left, it will return True
             return (left_wrist_above_nose and left_wrist_extended and right_arm_check) or (right_wrist_above_nose and right_wrist_extended and left_arm_check)
@@ -133,13 +185,9 @@ class HumanTracker:
     def check_right_leg_opposite90(self):
         #Check if the right leg is about 90 degrees on opposite side of body
         if self.processed_pose.pose_landmarks:
-            landmarks = self.processed_pose.pose_landmarks.landmark
-            right_hip = landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP]
-            right_knee = landmarks[self.mp_pose.PoseLandmark.RIGHT_KNEE]
-            right_ankle = landmarks[self.mp_pose.PoseLandmark.RIGHT_ANKLE]
-           
-            hip_to_knee_angle = self.calculate_angle(right_hip, right_ankle)
-            knee_to_ankle_angle = self.calculate_angle(right_knee, right_ankle)
+            self.update_body_parts()
+            hip_to_knee_angle = self.calculate_angle(self.right_hip, self.right_ankle)
+            knee_to_ankle_angle = self.calculate_angle(self.right_knee, self.right_ankle)
             if (hip_to_knee_angle <= 70 or hip_to_knee_angle >= 315) and (knee_to_ankle_angle <= 70 or knee_to_ankle_angle >= 315):
                 return True
         return False
@@ -147,13 +195,65 @@ class HumanTracker:
     def check_left_leg_opposite90(self):
         #Check if the left leg is about parallel with the person's hip on opposite side
         if self.processed_pose.pose_landmarks:
-            landmarks = self.processed_pose.pose_landmarks.landmark
-            left_hip = landmarks[self.mp_pose.PoseLandmark.LEFT_HIP]
-            left_knee = landmarks[self.mp_pose.PoseLandmark.LEFT_KNEE]
-            left_ankle = landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE]
-           
-            hip_to_knee_angle = self.calculate_angle(left_hip, left_knee)
-            knee_to_ankle_angle = self.calculate_angle(left_knee, left_ankle)
+            self.update_body_parts()
+            hip_to_knee_angle = self.calculate_angle(self.left_hip, self.left_knee)
+            knee_to_ankle_angle = self.calculate_angle(self.left_knee, self.left_ankle)
             if (120 <= hip_to_knee_angle <= 225) and (120 <= knee_to_ankle_angle <= 225):
+                return True
+        return False
+    
+    def check_arms_parallel_out(self):
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+
+            if self.check_left_arm_90() and self.check_right_arm_90():
+                return True
+        return False
+    
+    def check_right_leg_bent(self):
+        #Check if the right leg is about 90 degrees on other leg
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+           
+            right_leg_angle = self.calculate_angle3(self.right_hip, self.right_knee, self.right_ankle)
+            left_leg_angle = self.calculate_angle(self.left_hip, self.left_ankle)
+            
+            if (65 <= right_leg_angle <= 115) and (80 <= left_leg_angle <= 100) and (abs(self.right_ankle.y - self.left_knee.y) <= 0.2):
+                return True
+        return False
+    
+    def check_left_leg_bent(self):
+        #Check if the left leg is about 90 degrees on other leg
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+           
+            left_leg_angle = self.calculate_angle3(self.left_hip, self.left_knee, self.left_ankle)
+            right_leg_angle = self.calculate_angle(self.right_hip, self.right_ankle)
+            
+            if (65 <= left_leg_angle <= 115) and (80 <= right_leg_angle <= 100) and (abs(self.left_ankle.y - self.right_knee.y) <= 0.2):
+                return True
+        return False
+    
+    def check_arms_diagonal_right_up(self):
+        #Checks if arms are about diagonal from each other with right on top
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+            
+            right_arm_angle = self.calculate_angle(self.right_shoulder, self.right_wrist)
+            left_arm_angle = self.calculate_angle(self.left_shoulder, self.left_wrist)
+
+            if (20 <= left_arm_angle <= 70) and (200 <= right_arm_angle <= 250):
+                return True
+        return False
+    
+    def check_arms_diagonal_left_up(self):
+        #Checks if arms are about diagonal from each other with left on top
+        if self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+            
+            right_arm_angle = self.calculate_angle(self.right_shoulder, self.right_wrist)
+            left_arm_angle = self.calculate_angle(self.left_shoulder, self.left_wrist)
+
+            if (290 <= left_arm_angle <= 340) and (110 <= right_arm_angle <= 160):
                 return True
         return False
