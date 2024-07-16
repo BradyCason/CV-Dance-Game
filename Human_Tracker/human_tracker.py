@@ -26,7 +26,7 @@ class HumanTracker:
             )
             
     def update_body_parts(self):
-        #This grabs all of the body parts and updates there information
+        #This grabs all of the body parts and updates their information
         landmarks = self.processed_pose.pose_landmarks.landmark
         self.nose = landmarks[self.mp_pose.PoseLandmark.NOSE]
         self.left_eye_inner = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE_INNER]
