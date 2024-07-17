@@ -1,3 +1,2 @@
 Name,Method,ImageName
-Dab,check_if_dabbing,gottem.png
-Leg 90 Degrees,check_right_leg_90,gottem2.png
+Pose1,check_if_matches_pose,pose1.png

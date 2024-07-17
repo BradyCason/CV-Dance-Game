@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import math
+import numpy as np
 
 
 class HumanTracker:
@@ -26,41 +27,76 @@ class HumanTracker:
             )
             
     def update_body_parts(self):
-        #This grabs all of the body parts and updates their information
-        landmarks = self.processed_pose.pose_landmarks.landmark
-        self.nose = landmarks[self.mp_pose.PoseLandmark.NOSE]
-        self.left_eye_inner = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE_INNER]
-        self.left_eye = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE]
-        self.left_eye_outer = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE_OUTER]
-        self.right_eye_inner = landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE_INNER]
-        self.right_eye = landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE]
-        self.right_eye_outer = landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE_OUTER]
-        self.left_ear = landmarks[self.mp_pose.PoseLandmark.LEFT_EAR]
-        self.right_ear = landmarks[self.mp_pose.PoseLandmark.RIGHT_EAR]
-        self.mouth_left = landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT]
-        self.mouth_right = landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT]
-        self.left_shoulder = landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER]
-        self.right_shoulder = landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER]
-        self.left_elbow = landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW]
-        self.right_elbow = landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW]
-        self.left_wrist = landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST]
-        self.right_wrist = landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST]
-        self.left_pinky = landmarks[self.mp_pose.PoseLandmark.LEFT_PINKY]
-        self.right_pinky = landmarks[self.mp_pose.PoseLandmark.RIGHT_PINKY]
-        self.left_index = landmarks[self.mp_pose.PoseLandmark.LEFT_INDEX]
-        self.right_index = landmarks[self.mp_pose.PoseLandmark.RIGHT_INDEX]
-        self.left_thumb = landmarks[self.mp_pose.PoseLandmark.LEFT_THUMB]
-        self.right_thumb = landmarks[self.mp_pose.PoseLandmark.RIGHT_THUMB]
-        self.left_hip = landmarks[self.mp_pose.PoseLandmark.LEFT_HIP]
-        self.right_hip = landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP]
-        self.left_knee = landmarks[self.mp_pose.PoseLandmark.LEFT_KNEE]
-        self.right_knee = landmarks[self.mp_pose.PoseLandmark.RIGHT_KNEE]
-        self.left_ankle = landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE]
-        self.right_ankle = landmarks[self.mp_pose.PoseLandmark.RIGHT_ANKLE]
-        self.left_heel = landmarks[self.mp_pose.PoseLandmark.LEFT_HEEL]
-        self.right_heel = landmarks[self.mp_pose.PoseLandmark.RIGHT_HEEL]
-        self.left_foot_index = landmarks[self.mp_pose.PoseLandmark.LEFT_FOOT_INDEX]
-        self.right_foot_index = landmarks[self.mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
+        # This grabs all of the body parts and updates their information
+        if self.processed_pose and self.processed_pose.pose_landmarks:
+            landmarks = self.processed_pose.pose_landmarks.landmark
+            self.body_parts = {
+                'nose': landmarks[self.mp_pose.PoseLandmark.NOSE],
+                'left_eye_inner': landmarks[self.mp_pose.PoseLandmark.LEFT_EYE_INNER],
+                'left_eye': landmarks[self.mp_pose.PoseLandmark.LEFT_EYE],
+                'left_eye_outer': landmarks[self.mp_pose.PoseLandmark.LEFT_EYE_OUTER],
+                'right_eye_inner': landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE_INNER],
+                'right_eye': landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE],
+                'right_eye_outer': landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE_OUTER],
+                'left_ear': landmarks[self.mp_pose.PoseLandmark.LEFT_EAR],
+                'right_ear': landmarks[self.mp_pose.PoseLandmark.RIGHT_EAR],
+                'mouth_left': landmarks[self.mp_pose.PoseLandmark.MOUTH_LEFT],
+                'mouth_right': landmarks[self.mp_pose.PoseLandmark.MOUTH_RIGHT],
+                'left_shoulder': landmarks[self.mp_pose.PoseLandmark.LEFT_SHOULDER],
+                'right_shoulder': landmarks[self.mp_pose.PoseLandmark.RIGHT_SHOULDER],
+                'left_elbow': landmarks[self.mp_pose.PoseLandmark.LEFT_ELBOW],
+                'right_elbow': landmarks[self.mp_pose.PoseLandmark.RIGHT_ELBOW],
+                'left_wrist': landmarks[self.mp_pose.PoseLandmark.LEFT_WRIST],
+                'right_wrist': landmarks[self.mp_pose.PoseLandmark.RIGHT_WRIST],
+                'left_pinky': landmarks[self.mp_pose.PoseLandmark.LEFT_PINKY],
+                'right_pinky': landmarks[self.mp_pose.PoseLandmark.RIGHT_PINKY],
+                'left_index': landmarks[self.mp_pose.PoseLandmark.LEFT_INDEX],
+                'right_index': landmarks[self.mp_pose.PoseLandmark.RIGHT_INDEX],
+                'left_thumb': landmarks[self.mp_pose.PoseLandmark.LEFT_THUMB],
+                'right_thumb': landmarks[self.mp_pose.PoseLandmark.RIGHT_THUMB],
+                'left_hip': landmarks[self.mp_pose.PoseLandmark.LEFT_HIP],
+                'right_hip': landmarks[self.mp_pose.PoseLandmark.RIGHT_HIP],
+                'left_knee': landmarks[self.mp_pose.PoseLandmark.LEFT_KNEE],
+                'right_knee': landmarks[self.mp_pose.PoseLandmark.RIGHT_KNEE],
+                'left_ankle': landmarks[self.mp_pose.PoseLandmark.LEFT_ANKLE],
+                'right_ankle': landmarks[self.mp_pose.PoseLandmark.RIGHT_ANKLE],
+                'left_heel': landmarks[self.mp_pose.PoseLandmark.LEFT_HEEL],
+                'right_heel': landmarks[self.mp_pose.PoseLandmark.RIGHT_HEEL],
+                'left_foot': landmarks[self.mp_pose.PoseLandmark.LEFT_FOOT_INDEX],
+                'right_foot': landmarks[self.mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
+            }
+
+    def get_pose_info(self):
+        # Returns each body part with a tuple of their respective x and y coordinate in a dictionary
+        if self.processed_pose and self.processed_pose.pose_landmarks:
+            self.update_body_parts()
+            return {part: (landmark.x, landmark.y) for part, landmark in self.body_parts.items()}
+        return None
+    
+    def calculate_all_angles(self, pose):
+        # Returns a dictionary with every angle needed to check for a pose
+        return {
+            "left_arm_angle": self.calculate_angle(pose["left_shoulder"], pose["left_wrist"]),
+            "left_arm_angle_3": self.calculate_angle3(pose["left_shoulder"], pose["left_elbow"], pose["left_wrist"]),
+            "right_arm_angle": self.calculate_angle(pose["right_shoulder"], pose["right_wrist"]),
+            "right_arm_angle_3": self.calculate_angle3(pose["right_shoulder"], pose["right_elbow"], pose["right_wrist"]),
+            "left_leg_angle": self.calculate_angle(pose["left_hip"], pose["left_ankle"]),
+            "left_leg_angle_3": self.calculate_angle3(pose["left_hip"], pose["left_knee"], pose["left_ankle"]),
+            "right_leg_angle": self.calculate_angle(pose["right_hip"], pose["right_ankle"]),
+            "right_leg_angle_3": self.calculate_angle3(pose["right_hip"], pose["right_knee"], pose["right_ankle"])
+        }
+    
+    def check_if_matches_pose(self, image_pose, camera_pose):
+        # Checks whether the pose from the image matches the pose from the camera (does not have to be exact)
+        image_angles = self.calculate_all_angles(image_pose)
+        camera_angles = self.calculate_all_angles(camera_pose)
+        
+        angle_check_limit = 10
+        for key in image_angles:
+            if abs(image_angles[key] - camera_angles[key]) > angle_check_limit:
+                return False
+            
+        return True
         
     def check_hands_up(self):
         if self.processed_pose.pose_landmarks:
@@ -71,8 +107,8 @@ class HumanTracker:
    
     def calculate_angle(self, point1, point2):
         #Calculates the absolute angle between two points, follow diagram that Dylan made if needed
-        dx = point2.x - point1.x
-        dy = point2.y - point1.y
+        dx = point2[0] - point1[0]
+        dy = point2[1] - point1[1]
 
 
         angle_radians = math.atan2(dy, dx)
@@ -89,8 +125,8 @@ class HumanTracker:
     def calculate_angle3(self, point1, point2, point3):
         #Caculates the angle between three points using dot product with two vectors
         #Make the vectors
-        vector1 = (point1.x - point2.x, point1.y - point2.y)
-        vector2 = (point3.x - point2.x, point3.y - point2.y)
+        vector1 = (point1[0] - point2[0], point1[1] - point2[1])
+        vector2 = (point3[0] - point2[0], point3[1] - point2[1])
 
 
         #Dot product and magnitude calculations
@@ -110,7 +146,7 @@ class HumanTracker:
         #Check if the left arm is straight up
         if self.processed_pose.pose_landmarks:
             self.update_body_parts()
-            angle = self.calculate_angle(self.left_shoulder, self.left_wrist)
+            angle = self.calculate_angle(self.body_parts["left_shoulder"], self.left_wrist)
             if (250 <= angle <= 290):
                 return True
         return False

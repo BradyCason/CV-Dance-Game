@@ -6,6 +6,7 @@ import pandas
 import random
 from normal_rules import NormalRules
 from pause_menu import PauseMenu
+import numpy as np
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
@@ -108,10 +109,36 @@ class GameScreen(QtWidgets.QWidget):
             self.player_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
 
    def set_target_frame(self, img_name):
-       self.target_img.setPixmap(QtGui.QPixmap("Target_Poses/" + img_name))
+      # Load the image
+      self.image_path = os.path.join("Human_Poses", img_name)
+      frame = cv2.imread(self.image_path)
+      if frame is None:
+         print("Error: Could not read image.")
+         return
+
+      # Extract pose from the image
+      self.tracker.find_human(frame)
+      pose_info = self.tracker.get_pose_info()
+
+      # Create a black background
+      height, width, channels = frame.shape
+      black_background = np.zeros((height, width, channels), dtype=np.uint8)
+
+      #Draw pose on it
+      self.tracker.draw_pose(black_background)
+
+      # Convert the black background with pose to QImage
+      black_background = cv2.cvtColor(black_background, cv2.COLOR_BGR2RGB)
+      height, width, channel = black_background.shape
+      step = channel * width
+      q_img = QtGui.QImage(black_background.data, width, height, step, QtGui.QImage.Format_RGB888)
+
+      # Display the black background with pose on the target_img label
+      self.target_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
+      self.target_img.update()
 
    def update_time_bar(self):
-       self.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_time * 100)
+      self.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_time * 100)
 
    def display_score(self):
       self.score_label.setText(f"Score: {self.score}    Lives: {self.lives} ")
@@ -132,7 +159,7 @@ class GameScreen(QtWidgets.QWidget):
    def check_pose(self):
       check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
       
-      return check_move_method()
+      return check_move_method(self.extract_pose_from_image(self.image_path), self.extract_pose_from_camera())
 
    def choose_new_pose(self):
       self.current_pose = random.randrange(self.pose_data.shape[0])
@@ -172,6 +199,42 @@ class GameScreen(QtWidgets.QWidget):
    def restart(self):
       if self.mode == "Normal":
          self.start_normal_mode()
+         
+   def extract_pose_from_image(self, image_path):
+      frame = cv2.imread(image_path)
+      if frame is None:
+         print("Error: Could not read image.")
+         return None
+
+      # Find the human in the frame
+      self.tracker.find_human(frame)
+
+      # Extract pose information
+      pose_info = self.tracker.get_pose_info()
+
+      return pose_info
+
+   def extract_pose_from_camera(self):
+      cap = cv2.VideoCapture(0)
+      if not cap.isOpened():
+         print("Error: Could not open camera.")
+         return None
+
+      ret, frame = cap.read()
+      if not ret:
+         print("Error: Could not read frame.")
+         cap.release()
+         return None
+
+      # Find the human in the frame
+      self.tracker.find_human(frame)
+
+      # Extract pose information
+      pose_info = self.tracker.get_pose_info()
+
+      # Release the camera
+      cap.release()
+      return pose_info
 
 
 if __name__ == '__main__':
