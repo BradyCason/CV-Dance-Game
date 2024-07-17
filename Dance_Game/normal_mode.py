@@ -11,10 +11,10 @@ from Human_Tracker import human_tracker
 
 os.chdir(os.path.dirname(__file__))
 
-class DanceGame(QtWidgets.QWidget):
+class NormalMode(QtWidgets.QWidget):
    def __init__(self):
-      super(DanceGame, self).__init__()
-      uic.loadUi("game_screen2.ui", self)
+      super(NormalMode, self).__init__()
+      uic.loadUi("normal_mode.ui", self)
 
       # Get pose data from csv file
       self.pose_data = pandas.read_csv("poses.csv")
@@ -88,12 +88,13 @@ class DanceGame(QtWidgets.QWidget):
    def choose_new_pose(self):
       self.current_pose = random.randrange(self.pose_data.shape[0])
       self.set_target_frame(self.pose_data["ImageName"][self.current_pose])
+      self.dance_name.setText(self.pose_data["Name"][self.current_pose])
    
    def set_new_pose_timer(self, new_time):
       self.pose_timer.start(new_time)
 
 if __name__ == '__main__':
    app = QtWidgets.QApplication(sys.argv)
-   MainWindow = DanceGame()
+   MainWindow = NormalMode()
    MainWindow.show()
    sys.exit(app.exec_())
