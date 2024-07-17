@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from normal_mode import NormalMode
+from game_screen import GameScreen
 from home_screen import HomeScreen
 from credits_screen import CreditsScreen
 
@@ -13,10 +13,10 @@ class Application_Controller(QtWidgets.QMainWindow):
         self.stacked_widget = QtWidgets.QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        # Set up Normal Mode Widget
-        self.normal_screen = NormalMode()
-        self.stacked_widget.addWidget(self.normal_screen)
-        self.normal_screen.pause_button.clicked.connect(self.show_home_screen)
+        # Set up Game Screen Widget
+        self.game_screen = GameScreen()
+        self.stacked_widget.addWidget(self.game_screen)
+        self.game_screen.pause_menu.quit_button.clicked.connect(self.show_home_screen)
 
         # Set up Home Screen Widget
         self.home_screen = HomeScreen()
@@ -32,8 +32,9 @@ class Application_Controller(QtWidgets.QMainWindow):
         self.show_home_screen()
 
     def show_normal_screen(self):
-        self.stacked_widget.setCurrentWidget(self.normal_screen)
-        self.normal_screen.open_window()
+        self.game_screen.mode = "Normal"
+        self.stacked_widget.setCurrentWidget(self.game_screen)
+        self.game_screen.open_window()
 
     def show_home_screen(self):
         self.stacked_widget.setCurrentWidget(self.home_screen)

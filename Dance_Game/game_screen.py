@@ -5,6 +5,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtMultimedia
 import pandas
 import random
 from normal_rules import NormalRules
+from pause_menu import PauseMenu
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
@@ -12,10 +13,10 @@ from Human_Tracker import human_tracker
 
 os.chdir(os.path.dirname(__file__))
 
-class NormalMode(QtWidgets.QWidget):
+class GameScreen(QtWidgets.QWidget):
    def __init__(self):
-      super(NormalMode, self).__init__()
-      uic.loadUi("normal_mode.ui", self)
+      super(GameScreen, self).__init__()
+      uic.loadUi("game_screen.ui", self)
 
       # Get pose data from csv file
       self.pose_data = pandas.read_csv("poses.csv")
@@ -33,21 +34,31 @@ class NormalMode(QtWidgets.QWidget):
 
       # Initialize music player
       self.music_player = QtMultimedia.QMediaPlayer()
+      self.music_position = 0
+
+      # Initialize dialog boxes
+      self.pause_menu = PauseMenu(self)
+      self.pause_menu.resume_button.clicked.connect(self.resume)
+      self.pause_menu.restart_button.clicked.connect(self.restart)
+      self.pause_menu.rules_button.clicked.connect(self.open_rules)
+      self.pause_menu.quit_button.clicked.connect(self.close_window)
+      self.normal_rules_window = NormalRules(self)
 
       # Initialize Timers
       self.game_timer = QtCore.QTimer()
       self.game_timer.timeout.connect(self.game_timer_loop)
       self.pose_timer = QtCore.QTimer()
       self.pose_timer.timeout.connect(self.pose_timer_loop)
+      self.pose_timer_remaining_time = 0
 
       # Setup buttons
-      self.pause_button.clicked.connect(self.close_window)
+      self.pause_button.clicked.connect(self.pause)
 
-   def open_window(self):
-      # Show rules window
-      dialog = NormalRules(self)
-      dialog.exec_()
+   def open_rules(self):
+      if self.mode == "Normal":
+         self.normal_rules_window.exec_()
 
+   def start_normal_mode(self):
       # Start timers
       self.game_timer.start(30)
       self.pose_timer.start(self.pose_time)
@@ -61,6 +72,12 @@ class NormalMode(QtWidgets.QWidget):
       self.game_timer.stop()
       self.pose_timer.stop()
       self.stop_music()
+
+   def open_window(self):
+      self.open_rules()
+
+      if self.mode == "Normal":
+         self.start_normal_mode()
 
    def game_timer_loop(self):
        self.update_player_frame()
@@ -87,12 +104,12 @@ class NormalMode(QtWidgets.QWidget):
        self.target_img.setPixmap(QtGui.QPixmap("Target_Poses/" + img_name))
 
    def update_time_bar(self):
-       self.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_timer.interval() * 100)
+       self.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_time * 100)
 
    def pose_timer_loop(self):
       self.check_pose()
       self.choose_new_pose()
-      print("In loop")
+      self.pose_timer.setInterval(self.pose_time)
 
    def check_pose(self):
       check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
@@ -118,10 +135,34 @@ class NormalMode(QtWidgets.QWidget):
       self.music_player.play()
 
    def stop_music(self):
+      self.music_position = self.music_player.position()
       self.music_player.stop()
+
+   def resume_music(self):
+      self.music_player.setPosition(self.music_position)
+      self.music_player.play()
+
+   def pause(self):
+      self.stop_music()
+      self.game_timer.stop()
+      self.pose_timer_remaining_time = self.pose_timer.remainingTime()
+      self.pose_timer.stop()
+      
+      if not self.pause_menu.exec_():
+         self.resume()
+
+   def resume(self):
+      self.resume_music()
+      self.game_timer.start()
+      self.pose_timer.start(self.pose_timer_remaining_time)
+
+   def restart(self):
+      if self.mode == "Normal":
+         self.start_normal_mode()
+
 
 if __name__ == '__main__':
    app = QtWidgets.QApplication(sys.argv)
-   MainWindow = NormalMode()
+   MainWindow = GameScreen()
    MainWindow.show()
    sys.exit(app.exec_())
