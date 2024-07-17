@@ -63,10 +63,17 @@ class GameScreen(QtWidgets.QWidget):
       self.game_timer.start(30)
       self.pose_timer.start(self.pose_time)
 
+      # Initialize variables
+      self.lives = 3
+      self.score = 0
+
       # Initialize the pose and the target image
       self.choose_new_pose()
 
+      # Play music
       self.play_song("song1.mp3")
+
+      self.display_score()
 
    def close_window(self):
       self.game_timer.stop()
@@ -106,20 +113,26 @@ class GameScreen(QtWidgets.QWidget):
    def update_time_bar(self):
        self.time_bar.setProperty("value", self.pose_timer.remainingTime() / self.pose_time * 100)
 
+   def display_score(self):
+      self.score_label.setText(f"Score: {self.score}    Lives: {self.lives} ")
+
    def pose_timer_loop(self):
-      self.check_pose()
+      if self.check_pose():
+         self.move_status.setText(random.choice(self.success_phrases))
+         self.move_status.setStyleSheet("QLabel {background-color: green;}")
+         self.score += 1
+      else:
+         self.move_status.setText(random.choice(self.failure_phrases))
+         self.move_status.setStyleSheet("QLabel {background-color: red;}")
+         self.lives -= 1
       self.choose_new_pose()
       self.pose_timer.setInterval(self.pose_time)
+      self.display_score()
 
    def check_pose(self):
       check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
       
-      if check_move_method():
-         self.move_status.setText(random.choice(self.success_phrases))
-         self.move_status.setStyleSheet("QLabel {background-color: green;}")
-      else:
-         self.move_status.setText(random.choice(self.failure_phrases))
-         self.move_status.setStyleSheet("QLabel {background-color: red;}")
+      return check_move_method()
 
    def choose_new_pose(self):
       self.current_pose = random.randrange(self.pose_data.shape[0])
