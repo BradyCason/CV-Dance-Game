@@ -88,14 +88,14 @@ class HumanTracker:
     
     def check_if_matches_pose(self, image_pose, camera_pose):
         # Checks whether the pose from the image matches the pose from the camera (does not have to be exact)
-        image_angles = self.calculate_all_angles(image_pose)
         camera_angles = self.calculate_all_angles(camera_pose)
+        image_angles = self.calculate_all_angles(image_pose)
         
         angle_check_limit = 10
         for key in image_angles:
             if abs(image_angles[key] - camera_angles[key]) > angle_check_limit:
                 return False
-            
+        
         return True
         
     def check_hands_up(self):

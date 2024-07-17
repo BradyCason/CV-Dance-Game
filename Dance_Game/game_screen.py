@@ -29,6 +29,7 @@ class GameScreen(QtWidgets.QWidget):
 
       # Initialize human tracker
       self.tracker = human_tracker.HumanTracker()
+      self.image_tracker = human_tracker.HumanTracker()
 
       # Initialize video capture
       self.video_capture = cv2.VideoCapture(0)
@@ -117,15 +118,14 @@ class GameScreen(QtWidgets.QWidget):
          return
 
       # Extract pose from the image
-      self.tracker.find_human(frame)
-      pose_info = self.tracker.get_pose_info()
+      self.image_tracker.find_human(frame)
 
       # Create a black background
       height, width, channels = frame.shape
       black_background = np.zeros((height, width, channels), dtype=np.uint8)
 
       #Draw pose on it
-      self.tracker.draw_pose(black_background)
+      self.image_tracker.draw_pose(black_background)
 
       # Convert the black background with pose to QImage
       black_background = cv2.cvtColor(black_background, cv2.COLOR_BGR2RGB)
@@ -156,10 +156,10 @@ class GameScreen(QtWidgets.QWidget):
       self.pose_timer.setInterval(self.pose_time)
       self.display_score()
 
-   def check_pose(self):
-      check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
-      
-      return check_move_method(self.extract_pose_from_image(self.image_path), self.extract_pose_from_camera())
+   def check_pose(self):  
+      if self.image_tracker.processed_pose.pose_landmarks and self.tracker.processed_pose.pose_landmarks:    
+         return self.tracker.check_if_matches_pose(self.extract_pose_from_image(self.image_path), self.extract_pose_from_camera())
+      return False
 
    def choose_new_pose(self):
       self.current_pose = random.randrange(self.pose_data.shape[0])
@@ -207,23 +207,21 @@ class GameScreen(QtWidgets.QWidget):
          return None
 
       # Find the human in the frame
-      self.tracker.find_human(frame)
+      self.image_tracker.find_human(frame)
 
       # Extract pose information
-      pose_info = self.tracker.get_pose_info()
+      pose_info = self.image_tracker.get_pose_info()
 
       return pose_info
 
    def extract_pose_from_camera(self):
-      cap = cv2.VideoCapture(0)
-      if not cap.isOpened():
-         print("Error: Could not open camera.")
+      if not self.video_capture.isOpened():
+         print("Error: Video capture not opened.")
          return None
 
-      ret, frame = cap.read()
+      ret, frame = self.video_capture.read()
       if not ret:
          print("Error: Could not read frame.")
-         cap.release()
          return None
 
       # Find the human in the frame
@@ -232,8 +230,6 @@ class GameScreen(QtWidgets.QWidget):
       # Extract pose information
       pose_info = self.tracker.get_pose_info()
 
-      # Release the camera
-      cap.release()
       return pose_info
 
 
