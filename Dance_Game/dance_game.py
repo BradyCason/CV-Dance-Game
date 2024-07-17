@@ -2,7 +2,6 @@ import sys
 import os
 import cv2
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-#from game_screen2 import Ui_MainWindow
 import pandas
 import random
 
@@ -15,7 +14,6 @@ os.chdir(os.path.dirname(__file__))
 class DanceGame(QtWidgets.QWidget):
    def __init__(self):
       super(DanceGame, self).__init__()
-      self.setWindowTitle("Just Prance")
       uic.loadUi("game_screen2.ui", self)
 
       # Get pose data from csv file
