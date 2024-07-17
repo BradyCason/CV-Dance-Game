@@ -2,6 +2,7 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from normal_mode import NormalMode
 from home_screen import HomeScreen
+from credits_screen import CreditsScreen
 
 class Application_Controller(QtWidgets.QMainWindow):
     def __init__(self):
@@ -21,6 +22,12 @@ class Application_Controller(QtWidgets.QMainWindow):
         self.home_screen = HomeScreen()
         self.stacked_widget.addWidget(self.home_screen)
         self.home_screen.normal_button.clicked.connect(self.show_normal_screen)
+        self.home_screen.credits_button.clicked.connect(self.show_credits_screen)
+
+        # Set up Credits Screen Widget
+        self.credits_screen = CreditsScreen()
+        self.stacked_widget.addWidget(self.credits_screen)
+        self.credits_screen.back_button.clicked.connect(self.show_home_screen)
 
         self.show_home_screen()
 
@@ -29,6 +36,9 @@ class Application_Controller(QtWidgets.QMainWindow):
 
     def show_home_screen(self):
         self.stacked_widget.setCurrentWidget(self.home_screen)
+
+    def show_credits_screen(self):
+        self.stacked_widget.setCurrentWidget(self.credits_screen)
 
 
 if __name__ == "__main__":
