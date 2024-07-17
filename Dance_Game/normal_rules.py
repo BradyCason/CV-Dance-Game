@@ -5,7 +5,6 @@ class NormalRules(QtWidgets.QDialog):
         super().__init__(parent)
 
         self.setWindowTitle("Normal Mode Rules")
-        self.setGeometry(150, 150, 200, 100)
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(QtWidgets.QLabel("Rules:\nThese are the Rules bro."))

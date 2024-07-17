@@ -1,7 +1,7 @@
 import sys
 import os
 import cv2
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtMultimedia
 import pandas
 import random
 from normal_rules import NormalRules
@@ -31,6 +31,9 @@ class NormalMode(QtWidgets.QWidget):
       # Initialize video capture
       self.video_capture = cv2.VideoCapture(0)
 
+      # Initialize music player
+      self.music_player = QtMultimedia.QMediaPlayer()
+
       # Initialize Timers
       self.game_timer = QtCore.QTimer()
       self.game_timer.timeout.connect(self.game_timer_loop)
@@ -52,9 +55,12 @@ class NormalMode(QtWidgets.QWidget):
       # Initialize the pose and the target image
       self.choose_new_pose()
 
+      self.play_song("song1.mp3")
+
    def close_window(self):
       self.game_timer.stop()
       self.pose_timer.stop()
+      self.stop_music()
 
    def game_timer_loop(self):
        self.update_player_frame()
@@ -105,6 +111,14 @@ class NormalMode(QtWidgets.QWidget):
    
    def set_new_pose_timer(self, new_time):
       self.pose_timer.start(new_time)
+
+   def play_song(self, file_name):
+      media_content = QtMultimedia.QMediaContent(QtCore.QUrl.fromLocalFile(file_name))
+      self.music_player.setMedia(media_content)
+      self.music_player.play()
+
+   def stop_music(self):
+      self.music_player.stop()
 
 if __name__ == '__main__':
    app = QtWidgets.QApplication(sys.argv)
