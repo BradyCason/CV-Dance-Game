@@ -33,6 +33,7 @@ class Application_Controller(QtWidgets.QMainWindow):
 
     def show_normal_screen(self):
         self.stacked_widget.setCurrentWidget(self.normal_screen)
+        self.normal_screen.open_window()
 
     def show_home_screen(self):
         self.stacked_widget.setCurrentWidget(self.home_screen)

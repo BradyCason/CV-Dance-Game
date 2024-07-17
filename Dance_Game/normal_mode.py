@@ -4,6 +4,7 @@ import cv2
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import pandas
 import random
+from normal_rules import NormalRules
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
@@ -27,21 +28,33 @@ class NormalMode(QtWidgets.QWidget):
       # Initialize human tracker
       self.tracker = human_tracker.HumanTracker()
 
-      # Setup Video Capture
+      # Initialize video capture
       self.video_capture = cv2.VideoCapture(0)
 
-      # Setup timer for player video
+      # Initialize Timers
       self.game_timer = QtCore.QTimer()
       self.game_timer.timeout.connect(self.game_timer_loop)
-      self.game_timer.start(30)
-
-      # Setup timer for pose
       self.pose_timer = QtCore.QTimer()
       self.pose_timer.timeout.connect(self.pose_timer_loop)
+
+      # Setup buttons
+      self.pause_button.clicked.connect(self.close_window)
+
+   def open_window(self):
+      # Show rules window
+      dialog = NormalRules(self)
+      dialog.exec_()
+
+      # Start timers
+      self.game_timer.start(30)
       self.pose_timer.start(self.pose_time)
 
       # Initialize the pose and the target image
       self.choose_new_pose()
+
+   def close_window(self):
+      self.game_timer.stop()
+      self.pose_timer.stop()
 
    def game_timer_loop(self):
        self.update_player_frame()
@@ -73,9 +86,9 @@ class NormalMode(QtWidgets.QWidget):
    def pose_timer_loop(self):
       self.check_pose()
       self.choose_new_pose()
+      print("In loop")
 
    def check_pose(self):
-      print(self.pose_data)
       check_move_method = self.tracker.__getattribute__(self.pose_data["Method"][self.current_pose])
       
       if check_move_method():
