@@ -8,6 +8,7 @@ from normal_rules import NormalRules
 from pause_menu import PauseMenu
 import numpy as np
 import requests
+from dotenv import load_dotenv
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
@@ -58,6 +59,9 @@ class GameScreen(QtWidgets.QWidget):
       self.pause_button.clicked.connect(self.pause)
 
       self.target_images = []
+      load_dotenv()
+      self.client_id = os.getenv('UNSPLASH_ACCESS_KEY')
+      print(self.client_id)
 
    def open_rules(self):
       if self.mode == "Normal":
@@ -174,12 +178,11 @@ class GameScreen(QtWidgets.QWidget):
       pass
 
    def get_new_images(self):
-      access_key = 'y9vGuZTc6TGRchH-JbH7CPbPq9k4v98PnCmwfDb9oZw'
       search_url = "https://api.unsplash.com/photos/random"
 
       params = {
       'query': 'dancer+pose',   # Search term
-      'client_id': access_key,  # Your access key
+      'client_id': self.client_id,  # Your access key
       'count': 50
       }
 
