@@ -61,7 +61,6 @@ class GameScreen(QtWidgets.QWidget):
       self.target_images = []
       load_dotenv()
       self.client_id = os.getenv('UNSPLASH_ACCESS_KEY')
-      print(self.client_id)
 
    def open_rules(self):
       if self.mode == "Normal":
