@@ -57,6 +57,8 @@ class GameScreen(QtWidgets.QWidget):
       # Setup buttons
       self.pause_button.clicked.connect(self.pause)
 
+      self.target_images = []
+
    def open_rules(self):
       if self.mode == "Normal":
          self.normal_rules_window.exec_()
@@ -169,42 +171,40 @@ class GameScreen(QtWidgets.QWidget):
       # self.dance_name.setText(self.pose_data["Name"][self.current_pose])
 
       # API Code
-      found_image = False
-      while not found_image:
-         # Get image from api
-         access_key = 'y9vGuZTc6TGRchH-JbH7CPbPq9k4v98PnCmwfDb9oZw'
-         search_url = "https://api.unsplash.com/photos/random"
+      pass
 
-         params = {
-         'query': 'dancer+pose',   # Search term
-         'client_id': access_key,  # Your access key
-         'per_page': 10,      # Number of photos per page
-         'page': 1            # Page number
-         }
+   def get_new_images(self):
+      self.target_images = []
+      
+      access_key = 'y9vGuZTc6TGRchH-JbH7CPbPq9k4v98PnCmwfDb9oZw'
+      search_url = "https://api.unsplash.com/photos/random"
 
-         response = requests.get(search_url, params=params)
-         if response.status_code == 200:
-            # Parse the JSON response
-            data = response.json()
-            image_url = data['urls']['small']
-            image_response = requests.get(image_url)
+      params = {
+      'query': 'dancer+pose',   # Search term
+      'client_id': access_key,  # Your access key
+      'count': 50
+      }
 
-            if image_response.status_code == 200:
-               image_array = np.asarray(bytearray(image_response.content), dtype="uint8")
-        
-               # Decode the image to an OpenCV format
-               image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-               cv2.imshow('Image', image)
-            else:
-               print("Failed to retrieve image:", image_response.status_code)
-         else:
-            print("Failed to retrieve data:", response.status_code)
+      response = requests.get(search_url, params=params)
+      if response.status_code == 200:
+         data = response.json()
+         self.target_images = [image['urls']['small'] for image in data]
 
-
-         # Find pose
-
-         # If found pose, then break loop
-
+   def get_next_image(self):
+      if len(self.target_images) > 0:
+         image_response = requests.get(self.target_images.pop())
+         if image_response.status_code == 200:
+            image_array = np.asarray(bytearray(image_response.content), dtype="uint8")
+      
+            # Decode the image to an OpenCV format
+            image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+            cv2.imshow('Image', image)
+            cv2.waitKey(0)
+            return image
+         return None
+      else:
+         self.get_new_images()
+         return self.get_next_image()
    
    def set_new_pose_timer(self, new_time):
       self.pose_timer.start(new_time)
@@ -274,7 +274,10 @@ class GameScreen(QtWidgets.QWidget):
 
 
 if __name__ == '__main__':
+   # app = QtWidgets.QApplication(sys.argv)
+   # MainWindow = GameScreen()
+   # MainWindow.show()
+   # sys.exit(app.exec_())
    app = QtWidgets.QApplication(sys.argv)
-   MainWindow = GameScreen()
-   MainWindow.show()
-   sys.exit(app.exec_())
+   gs = GameScreen()
+   print(gs.get_next_image())
