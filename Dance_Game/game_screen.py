@@ -7,6 +7,7 @@ import random
 from normal_rules import NormalRules
 from pause_menu import PauseMenu
 import numpy as np
+import requests
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
@@ -162,9 +163,48 @@ class GameScreen(QtWidgets.QWidget):
       return False
 
    def choose_new_pose(self):
-      self.current_pose = random.randrange(self.pose_data.shape[0])
-      self.set_target_frame(self.pose_data["ImageName"][self.current_pose])
-      self.dance_name.setText(self.pose_data["Name"][self.current_pose])
+      # Original code
+      # self.current_pose = random.randrange(self.pose_data.shape[0])
+      # self.set_target_frame(self.pose_data["ImageName"][self.current_pose])
+      # self.dance_name.setText(self.pose_data["Name"][self.current_pose])
+
+      # API Code
+      found_image = False
+      while not found_image:
+         # Get image from api
+         access_key = 'y9vGuZTc6TGRchH-JbH7CPbPq9k4v98PnCmwfDb9oZw'
+         search_url = "https://api.unsplash.com/photos/random"
+
+         params = {
+         'query': 'dancer+pose',   # Search term
+         'client_id': access_key,  # Your access key
+         'per_page': 10,      # Number of photos per page
+         'page': 1            # Page number
+         }
+
+         response = requests.get(search_url, params=params)
+         if response.status_code == 200:
+            # Parse the JSON response
+            data = response.json()
+            image_url = data['urls']['small']
+            image_response = requests.get(image_url)
+
+            if image_response.status_code == 200:
+               image_array = np.asarray(bytearray(image_response.content), dtype="uint8")
+        
+               # Decode the image to an OpenCV format
+               image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+               cv2.imshow('Image', image)
+            else:
+               print("Failed to retrieve image:", image_response.status_code)
+         else:
+            print("Failed to retrieve data:", response.status_code)
+
+
+         # Find pose
+
+         # If found pose, then break loop
+
    
    def set_new_pose_timer(self, new_time):
       self.pose_timer.start(new_time)
