@@ -90,8 +90,7 @@ class HumanTracker:
         # Checks whether the pose from the image matches the pose from the camera (does not have to be exact)
         camera_angles = self.calculate_all_angles(camera_pose)
         image_angles = self.calculate_all_angles(image_pose)
-        
-        angle_check_limit = 10
+        angle_check_limit = 90
         for key in image_angles:
             if abs(image_angles[key] - camera_angles[key]) > angle_check_limit:
                 return False
