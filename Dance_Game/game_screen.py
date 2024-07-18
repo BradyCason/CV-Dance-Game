@@ -174,8 +174,6 @@ class GameScreen(QtWidgets.QWidget):
       pass
 
    def get_new_images(self):
-      self.target_images = []
-      
       access_key = 'y9vGuZTc6TGRchH-JbH7CPbPq9k4v98PnCmwfDb9oZw'
       search_url = "https://api.unsplash.com/photos/random"
 
@@ -198,8 +196,6 @@ class GameScreen(QtWidgets.QWidget):
       
             # Decode the image to an OpenCV format
             image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-            cv2.imshow('Image', image)
-            cv2.waitKey(0)
             return image
          return None
       else:
