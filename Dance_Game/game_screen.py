@@ -167,6 +167,13 @@ class GameScreen(QtWidgets.QWidget):
       if self.image_tracker.processed_pose.pose_landmarks and self.tracker.processed_pose.pose_landmarks:
          return self.tracker.check_if_matches_pose(self.image_pose_info, camera_info)
       return False
+   
+   def has_all_body_parts(self, pose_landmarks, required_parts):
+      #Checks the pose has all of the given required parts (and they are visible)
+      for part in required_parts:
+         if part not in pose_landmarks or pose_landmarks[part][2] < 0.4:
+            return False
+      return True
 
    def choose_new_pose(self):
       # Original code
@@ -179,31 +186,40 @@ class GameScreen(QtWidgets.QWidget):
 
       if frame is not None:
          self.image_pose_info = self.extract_pose_from_image(frame)
+         #Check image has landmarks, and has all of the required body parts
          if self.image_tracker.processed_pose.pose_landmarks:
-            # Calculate the new width to maintain the aspect ratio
-            height, width, channels = frame.shape
-            aspect_ratio = width / height
-            new_width = int(fixed_height * aspect_ratio)
+            required_landmarks = [
+               "nose", "left_eye", "right_eye", "left_ear", "right_ear",
+               "left_shoulder", "right_shoulder", "left_elbow", "right_elbow",
+               "left_wrist", "right_wrist", "left_hip", "right_hip",
+               "left_knee", "right_knee", "left_ankle", "right_ankle"
+            ]
+            if self.has_all_body_parts(self.image_pose_info, required_landmarks):
             
-            # Resize the frame to the new dimensions
-            resized_frame = cv2.resize(frame, (new_width, fixed_height))
-            
-            # Create a black background of the same size as the resized frame
-            black_background = np.zeros((fixed_height, new_width, channels), dtype=np.uint8)
+               # Calculate the new width to maintain the aspect ratio
+               height, width, channels = frame.shape
+               aspect_ratio = width / height
+               new_width = int(fixed_height * aspect_ratio)
+               
+               # Resize the frame to the new dimensions
+               resized_frame = cv2.resize(frame, (new_width, fixed_height))
+               
+               # Create a black background of the same size as the resized frame
+               black_background = np.zeros((fixed_height, new_width, channels), dtype=np.uint8)
 
-            # Draw the pose on the black background
-            self.image_tracker.draw_pose(resized_frame)
-            
-            # Convert the black background with pose to QImage
-            resized_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
-            height, width, channel = resized_frame.shape
-            step = channel * width
-            q_img = QtGui.QImage(resized_frame.data, width, height, step, QtGui.QImage.Format_RGB888)
+               # Draw the pose on the black background
+               self.image_tracker.draw_pose(resized_frame)
+               
+               # Convert the black background with pose to QImage
+               resized_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
+               height, width, channel = resized_frame.shape
+               step = channel * width
+               q_img = QtGui.QImage(resized_frame.data, width, height, step, QtGui.QImage.Format_RGB888)
 
-            # Display the black background with pose on the target_img label
-            self.target_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
-            self.target_img.update()
-            return
+               # Display the black background with pose on the target_img label
+               self.target_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
+               self.target_img.update()
+               return
       # If no frame is returned or no pose was found, retry fetching the next image
       self.get_next_image()
       self.choose_new_pose()

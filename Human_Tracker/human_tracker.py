@@ -70,7 +70,7 @@ class HumanTracker:
         # Returns each body part with a tuple of their respective x and y coordinate in a dictionary
         if self.processed_pose and self.processed_pose.pose_landmarks:
             self.update_body_parts()
-            return {part: (landmark.x, landmark.y) for part, landmark in self.body_parts.items()}
+            return {part: (landmark.x, landmark.y, landmark.visibility) for part, landmark in self.body_parts.items()}
         return None
     
     def calculate_all_angles(self, pose):
