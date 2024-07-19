@@ -171,7 +171,7 @@ class GameScreen(QtWidgets.QWidget):
    def has_all_body_parts(self, pose_landmarks, required_parts):
       #Checks the pose has all of the given required parts (and they are visible)
       for part in required_parts:
-         if part not in pose_landmarks or pose_landmarks[part][2] < 0.4:
+         if part not in pose_landmarks or pose_landmarks[part][2] < 0.6:
             return False
       return True
 
