@@ -87,15 +87,39 @@ class HumanTracker:
         }
     
     def check_if_matches_pose(self, image_pose, camera_pose):
-        # Checks whether the pose from the image matches the pose from the camera (does not have to be exact)
+        # Calculate angles for both poses
         camera_angles = self.calculate_all_angles(camera_pose)
         image_angles = self.calculate_all_angles(image_pose)
-        angle_check_limit = 90
-        for key in image_angles:
-            if abs(image_angles[key] - camera_angles[key]) > angle_check_limit:
-                return False
         
-        return True
+        # Thresholds for angle and distance checks
+        angle_check_limit = 30
+        distance_check_limit = 0.5
+        visibility_threshold = 0.5
+
+        # Initialize matching score
+        match_score = 0
+        total_score = 0
+
+        # Check angles
+        for key in image_angles:
+            if abs(image_angles[key] - camera_angles[key]) <= angle_check_limit:
+                match_score += 1
+            total_score += 1
+
+        # Check relative distances
+        important_points = ["left_shoulder", "right_shoulder", "left_hip", "right_hip"]
+        for point in important_points:
+            if (image_pose[point][2] > visibility_threshold and camera_pose[point][2] > visibility_threshold):
+                img_point = np.array(image_pose[point][:2])
+                cam_point = np.array(camera_pose[point][:2])
+                distance = np.linalg.norm(img_point - cam_point)
+                if distance <= distance_check_limit:
+                    match_score += 1
+                total_score += 1
+
+        # Calculate final matching score
+        final_score = match_score / total_score
+        return final_score >= 0.7  # Adjust threshold based on desired leniency
         
     def check_hands_up(self):
         if self.processed_pose.pose_landmarks:

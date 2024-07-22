@@ -169,10 +169,28 @@ class GameScreen(QtWidgets.QWidget):
       return False
    
    def has_all_body_parts(self, pose_landmarks, required_parts):
-      #Checks the pose has all of the given required parts (and they are visible)
+      # Check if the body is in an upright position
+      if not (pose_landmarks["left_shoulder"][1] > pose_landmarks["nose"][1] and 
+            pose_landmarks["right_shoulder"][1] > pose_landmarks["nose"][1]):
+         return False
+      
+      if not (pose_landmarks["left_hip"][1] > pose_landmarks["left_shoulder"][1] and
+            pose_landmarks["right_hip"][1] > pose_landmarks["right_shoulder"][1]):
+         return False
+      
+      if not (pose_landmarks["left_knee"][1] > pose_landmarks["left_hip"][1] and
+            pose_landmarks["right_knee"][1] > pose_landmarks["right_hip"][1]):
+         return False
+      
+      if not (pose_landmarks["left_ankle"][1] > pose_landmarks["left_knee"][1] and
+            pose_landmarks["right_ankle"][1] > pose_landmarks["right_knee"][1]):
+         return False
+
+      # Check the pose has all of the given required parts (and they are visible)
       for part in required_parts:
          if part not in pose_landmarks or pose_landmarks[part][2] < 0.6:
             return False
+         
       return True
 
    def choose_new_pose(self):
@@ -204,9 +222,6 @@ class GameScreen(QtWidgets.QWidget):
                # Resize the frame to the new dimensions
                resized_frame = cv2.resize(frame, (new_width, fixed_height))
                
-               # Create a black background of the same size as the resized frame
-               black_background = np.zeros((fixed_height, new_width, channels), dtype=np.uint8)
-
                # Draw the pose on the black background
                self.image_tracker.draw_pose(resized_frame)
                
