@@ -9,6 +9,7 @@ class Application_Controller(QtWidgets.QMainWindow):
         super().__init__()
         self.setWindowTitle("Just Prance")
 
+        self.setFixedSize(1024, 768)
         # Set up Stacked Widget
         self.stacked_widget = QtWidgets.QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
@@ -50,9 +51,15 @@ class Application_Controller(QtWidgets.QMainWindow):
     def show_credits_screen(self):
         self.stacked_widget.setCurrentWidget(self.credits_screen)
 
-
 if __name__ == "__main__":
+    stylesheet = """
+    Application_Controller {
+        background-image: url("background.jpg");
+        background-repeat: no-repeat;
+        background-position: center;
+        }"""
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyleSheet(stylesheet)
     ac = Application_Controller()
     ac.show()
     sys.exit(app.exec_())

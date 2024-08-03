@@ -217,11 +217,12 @@ class GameScreen(QtWidgets.QWidget):
          return False
 
       # Check the pose has all of the given required parts (and they are visible)
+      checker = 3
       for part in required_parts:
          if part not in pose_landmarks or pose_landmarks[part][2] < 0.6:
-            return False
+            checker -= 1
          
-      return True
+      return checker > 0
 
    def choose_new_pose(self):
       # Original code
