@@ -52,6 +52,7 @@ class Application_Controller(QtWidgets.QMainWindow):
         self.stacked_widget.setCurrentWidget(self.credits_screen)
 
 if __name__ == "__main__":
+    #Add background image through CSS
     stylesheet = """
     Application_Controller {
         background-image: url("background.jpg");
