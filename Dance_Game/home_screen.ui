@@ -36,6 +36,20 @@
        <bold>true</bold>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: #ffffff;
+color: #4681f4;
+border: 2px solid #4681f4;
+}
+
+
+
+QPushButton:hover{
+background-color: #4681f4;
+color: white;
+}</string>
+     </property>
      <property name="text">
       <string>Credits</string>
      </property>
@@ -69,6 +83,20 @@
      <property name="autoFillBackground">
       <bool>false</bool>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: #ffffff;
+color: #4681f4;
+border: 2px solid #4681f4;
+}
+
+
+
+QPushButton:hover{
+background-color: #4681f4;
+color: white;
+}</string>
+     </property>
      <property name="text">
       <string>Normal Mode</string>
      </property>
@@ -96,6 +124,9 @@
        <strikeout>false</strikeout>
        <kerning>true</kerning>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Just Prance</string>
@@ -127,6 +158,20 @@
        <weight>75</weight>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: #ffffff;
+color: #4681f4;
+border: 2px solid #4681f4;
+}
+
+
+
+QPushButton:hover{
+background-color: #4681f4;
+color: white;
+}</string>
      </property>
      <property name="text">
       <string>Endless Mode</string>

@@ -35,6 +35,9 @@
        <pointsize>36</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
+     </property>
      <property name="text">
       <string>Credits</string>
      </property>
@@ -50,6 +53,9 @@
        <family>HoloLens MDL2 Assets</family>
        <pointsize>24</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
      </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Made by 2 dudes just tryna have a good time.&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Brady Cason is a Computer Science and Engineering major at UC Irvine.&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Dylan Hernandez is a Software Engineering major at Cal Poly San Luis Obispo.&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Just Dance, please don't sue us.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -85,6 +91,21 @@
        <family>HoloLens MDL2 Assets</family>
        <pointsize>16</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: #ffffff;
+color: #4681f4;
+border: 2px solid #4681f4;
+width: 100px
+}
+
+
+
+QPushButton:hover{
+background-color: #4681f4;
+color: white;
+}</string>
      </property>
      <property name="text">
       <string>Back</string>

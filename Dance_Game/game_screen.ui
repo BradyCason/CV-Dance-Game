@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,1,0,0" columnstretch="1,1">
+  <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,1,0" columnstretch="1,1">
    <item row="0" column="1">
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,1,0">
      <item>
@@ -26,6 +26,9 @@
          <italic>true</italic>
          <bold>true</bold>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Lives: _    Score: _</string>
@@ -65,8 +68,26 @@
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+background-color: #ffffff;
+color: #4681f4;
+border: 2px solid #4681f4;
+}
+
+
+
+QPushButton:hover{
+background-color: #4681f4;
+color: white;
+}</string>
+       </property>
        <property name="text">
         <string>Pause</string>
+       </property>
+       <property name="icon">
+        <iconset theme="pause">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -84,6 +105,9 @@
        <underline>false</underline>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Just Prance</string>
      </property>
@@ -92,14 +116,14 @@
    <item row="1" column="0">
     <widget class="QLabel" name="target_img">
      <property name="text">
-      <string>Target Image</string>
+      <string/>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
     <widget class="QLabel" name="player_img">
      <property name="text">
-      <string>Player Image</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -124,7 +148,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QLabel {background-color: green;}</string>
+      <string notr="true">QLabel {background-color: green;color: white;}</string>
      </property>
      <property name="text">
       <string>Perfect!</string>

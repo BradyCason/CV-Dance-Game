@@ -21,6 +21,9 @@ class GameScreen(QtWidgets.QWidget):
       super(GameScreen, self).__init__()
       uic.loadUi("game_screen.ui", self)
 
+      self.add_text_outline(self.title)
+      self.add_text_outline(self.score_label)
+
       # Get pose data from csv file
       self.pose_data = pandas.read_csv("poses.csv")
 
@@ -63,6 +66,15 @@ class GameScreen(QtWidgets.QWidget):
       self.target_images = []
       load_dotenv()
       self.client_id = os.getenv('UNSPLASH_ACCESS_KEY')
+
+   def add_text_outline(self, label):
+      effect1 = QtWidgets.QGraphicsDropShadowEffect(self)
+      effect1.setOffset(0,0)
+      effect1.setBlurRadius(10)
+      effect1.setColor(QtGui.QColor("black"))
+
+      label.setGraphicsEffect(effect1)
+      label.setStyleSheet("color: white;")
 
    def open_rules(self):
       if self.mode == "Normal":
