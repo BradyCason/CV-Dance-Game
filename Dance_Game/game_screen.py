@@ -163,6 +163,7 @@ class GameScreen(QtWidgets.QWidget):
       q_img = QtGui.QImage(black_background.data, width, height, step, QtGui.QImage.Format_RGB888)
 
       # Display the black background with pose on the target_img label
+      
       self.target_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
       self.target_img.update()
 
@@ -214,10 +215,6 @@ class GameScreen(QtWidgets.QWidget):
       if not (pose_landmarks["left_knee"][1] > pose_landmarks["left_hip"][1] and
             pose_landmarks["right_knee"][1] > pose_landmarks["right_hip"][1]):
          return False
-      
-      if not (pose_landmarks["left_ankle"][1] > pose_landmarks["left_knee"][1] and
-            pose_landmarks["right_ankle"][1] > pose_landmarks["right_knee"][1]):
-         return False
 
       # Check the pose has all of the given required parts (and they are visible)
       for part in required_parts:
@@ -240,10 +237,10 @@ class GameScreen(QtWidgets.QWidget):
          #Check image has landmarks, and has all of the required body parts
          if self.image_tracker.processed_pose.pose_landmarks:
             required_landmarks = [
-               "nose", "left_eye", "right_eye", "left_ear", "right_ear",
+               "nose", "left_eye", "right_eye",
                "left_shoulder", "right_shoulder", "left_elbow", "right_elbow",
                "left_wrist", "right_wrist", "left_hip", "right_hip",
-               "left_knee", "right_knee", "left_ankle", "right_ankle"
+               "left_knee", "right_knee"
             ]
             if self.has_all_body_parts(self.image_pose_info, required_landmarks):
             
@@ -255,16 +252,18 @@ class GameScreen(QtWidgets.QWidget):
                # Resize the frame to the new dimensions
                resized_frame = cv2.resize(frame, (new_width, fixed_height))
                
-               # Draw the pose on the black background
+               # Draw the pose on the original picture
                self.image_tracker.draw_pose(resized_frame)
                
-               # Convert the black background with pose to QImage
-               resized_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
+               # Convert the image with pose to QImage
+               flipped_image = cv2.flip(resized_frame, 1)
+               flipped_image = cv2.cvtColor(flipped_image, cv2.COLOR_BGR2RGB)
                height, width, channel = resized_frame.shape
                step = channel * width
-               q_img = QtGui.QImage(resized_frame.data, width, height, step, QtGui.QImage.Format_RGB888)
+               q_img = QtGui.QImage(flipped_image.data, width, height, step, QtGui.QImage.Format_RGB888)
+               
 
-               # Display the black background with pose on the target_img label
+               # Display the image with pose on the target_img label
                self.target_img.setPixmap(QtGui.QPixmap.fromImage(q_img))
                self.target_img.update()
                return
@@ -277,7 +276,7 @@ class GameScreen(QtWidgets.QWidget):
       search_url = "https://api.unsplash.com/photos/random"
 
       params = {
-      'query': 'dancer+tutorial',   # Search term
+      'query': 'dancer+pose',   # Search term
       'client_id': self.client_id,  # Your access key
       'count': 50
       }
