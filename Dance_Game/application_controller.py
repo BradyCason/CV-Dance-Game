@@ -9,7 +9,7 @@ class Application_Controller(QtWidgets.QMainWindow):
         super().__init__()
         self.setWindowTitle("Just Prance")
 
-        self.setFixedSize(1024, 768)
+        self.setFixedSize(956, 717)
         # Set up Stacked Widget
         self.stacked_widget = QtWidgets.QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
