@@ -4,7 +4,7 @@ import cv2
 from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtMultimedia
 import pandas
 import random
-from normal_rules import NormalRules
+from pop_up_windows import *
 from pause_menu import PauseMenu
 import numpy as np
 import requests
@@ -47,6 +47,8 @@ class GameScreen(QtWidgets.QWidget):
       self.pause_menu.rules_button.clicked.connect(self.open_rules)
       self.pause_menu.quit_button.clicked.connect(self.close_window)
       self.normal_rules_window = NormalRules(self)
+      self.endless_rules_window = EndlessRules(self)
+      self.death_screen_window = DeathScreen(self.close_window, self.restart, self)
 
       # Initialize Timers
       self.game_timer = QtCore.QTimer()
@@ -65,6 +67,8 @@ class GameScreen(QtWidgets.QWidget):
    def open_rules(self):
       if self.mode == "Normal":
          self.normal_rules_window.exec_()
+      else:
+         self.endless_rules_window.exec_()
 
    def start_normal_mode(self):
       # Start timers
@@ -82,6 +86,23 @@ class GameScreen(QtWidgets.QWidget):
       self.play_song("song1.mp3")
 
       self.display_score()
+      
+   def start_endless_mode(self):
+      # Start timers
+      self.game_timer.start(30)
+      self.pose_timer.start(self.pose_time)
+
+      # Initialize variables
+      self.score = 0
+      self.lives = 0
+
+      # Initialize the pose and the target image
+      self.choose_new_pose()
+
+      # Play music
+      self.play_song("song1.mp3")
+
+      self.display_endless_score()
 
    def close_window(self):
       self.game_timer.stop()
@@ -93,6 +114,8 @@ class GameScreen(QtWidgets.QWidget):
 
       if self.mode == "Normal":
          self.start_normal_mode()
+      else:
+         self.start_endless_mode()
 
    def game_timer_loop(self):
        self.update_player_frame()
@@ -148,6 +171,9 @@ class GameScreen(QtWidgets.QWidget):
 
    def display_score(self):
       self.score_label.setText(f"Score: {self.score}    Lives: {self.lives} ")
+      
+   def display_endless_score(self):
+      self.score_label.setText(f"Score: {self.score}    Lives: \u221E ")
 
    def pose_timer_loop(self):
       if self.check_pose():
@@ -160,7 +186,14 @@ class GameScreen(QtWidgets.QWidget):
          self.lives -= 1
       self.choose_new_pose()
       self.pose_timer.setInterval(self.pose_time)
-      self.display_score()
+      if self.mode == "Normal":
+         self.display_score()
+         if self.lives < 1:
+            self.stop_game()
+            self.death_screen_window.exec_()
+      else:
+         self.display_endless_score()
+         
 
    def check_pose(self):  
       camera_info = self.extract_pose_from_camera()
@@ -236,6 +269,7 @@ class GameScreen(QtWidgets.QWidget):
                self.target_img.update()
                return
       # If no frame is returned or no pose was found, retry fetching the next image
+      print("CHECKING")
       self.get_next_image()
       self.choose_new_pose()
 
@@ -284,13 +318,17 @@ class GameScreen(QtWidgets.QWidget):
       self.music_player.play()
 
    def pause(self):
+      self.stop_game()
+      
+      if not self.pause_menu.exec_():
+         self.resume()
+   
+   def stop_game(self):
       self.stop_music()
       self.game_timer.stop()
       self.pose_timer_remaining_time = self.pose_timer.remainingTime()
       self.pose_timer.stop()
       
-      if not self.pause_menu.exec_():
-         self.resume()
 
    def resume(self):
       self.resume_music()
@@ -300,6 +338,8 @@ class GameScreen(QtWidgets.QWidget):
    def restart(self):
       if self.mode == "Normal":
          self.start_normal_mode()
+      else:
+         self.start_endless_mode()
          
    def extract_pose_from_image(self, frame):
       #Get the pose information from image frame

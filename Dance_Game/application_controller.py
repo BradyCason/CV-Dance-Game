@@ -17,12 +17,15 @@ class Application_Controller(QtWidgets.QMainWindow):
         self.game_screen = GameScreen()
         self.stacked_widget.addWidget(self.game_screen)
         self.game_screen.pause_menu.quit_button.clicked.connect(self.show_home_screen)
+        self.game_screen.death_screen_window.quit_button.clicked.connect(self.show_home_screen)
+        self.game_screen.death_screen_window.rejected.connect(self.show_home_screen)
 
         # Set up Home Screen Widget
         self.home_screen = HomeScreen()
         self.stacked_widget.addWidget(self.home_screen)
         self.home_screen.normal_button.clicked.connect(self.show_normal_screen)
         self.home_screen.credits_button.clicked.connect(self.show_credits_screen)
+        self.home_screen.endless_button.clicked.connect(self.show_endless_screen)
 
         # Set up Credits Screen Widget
         self.credits_screen = CreditsScreen()
@@ -30,9 +33,14 @@ class Application_Controller(QtWidgets.QMainWindow):
         self.credits_screen.back_button.clicked.connect(self.show_home_screen)
 
         self.show_home_screen()
-
+        
     def show_normal_screen(self):
         self.game_screen.mode = "Normal"
+        self.stacked_widget.setCurrentWidget(self.game_screen)
+        self.game_screen.open_window()
+        
+    def show_endless_screen(self):
+        self.game_screen.mode = "Endless"
         self.stacked_widget.setCurrentWidget(self.game_screen)
         self.game_screen.open_window()
 
