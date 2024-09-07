@@ -10,8 +10,14 @@ class NormalRules(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel("How to Play:\n-A dance move will appear in "\
                                           "the target frame on the left.\n-Match the move "\
                                           "when the time bar reaches 0 to gain a point.\n-3 "\
-                                          "Strikes and you're out!"))
-        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok)
+                                          "Strikes and you're out! Select your difficulty."))
+        buttonBox = QtWidgets.QDialogButtonBox()
+        self.easyButton = QtWidgets.QPushButton("easy mode")
+        self.normalButton = QtWidgets.QPushButton("normal mode")
+        self.hardButton = QtWidgets.QPushButton("hard mode")
+        buttonBox.addButton(self.easyButton, QtWidgets.QDialogButtonBox.AcceptRole)
+        buttonBox.addButton(self.normalButton, QtWidgets.QDialogButtonBox.AcceptRole)
+        buttonBox.addButton(self.hardButton, QtWidgets.QDialogButtonBox.AcceptRole)        
         buttonBox.accepted.connect(self.accept)
         layout.addWidget(buttonBox)
 
@@ -27,8 +33,15 @@ class EndlessRules(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel("How to Play:\n-A dance move will appear in "\
                                           "the target frame on the left.\n-Match the move "\
                                           "when the time bar reaches 0 to gain a point.\n-Keep "\
-                                          "prancing until you can't, or else..."))
-        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok)
+                                          "prancing until you can't, or else...\n"\
+                                          "-Select your difficulty."))
+        buttonBox = QtWidgets.QDialogButtonBox()
+        self.easyButton = QtWidgets.QPushButton("easy mode")
+        self.normalButton = QtWidgets.QPushButton("normal mode")
+        self.hardButton = QtWidgets.QPushButton("hard mode")
+        buttonBox.addButton(self.easyButton, QtWidgets.QDialogButtonBox.AcceptRole)
+        buttonBox.addButton(self.normalButton, QtWidgets.QDialogButtonBox.AcceptRole)
+        buttonBox.addButton(self.hardButton, QtWidgets.QDialogButtonBox.AcceptRole)
         buttonBox.accepted.connect(self.accept)
         layout.addWidget(buttonBox)
 

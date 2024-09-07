@@ -29,6 +29,7 @@ class GameScreen(QtWidgets.QWidget):
 
       # Initialize game variables
       self.pose_time = 2000
+      self.start_pose_time = 2000
       self.success_phrases = ["Perfect!", "Good!", "You Got It!", "Nice!", "Well Done!"]
       self.failure_phrases = ["Miss!", "Whoops!", "Incorrect", "Fail"]
 
@@ -52,6 +53,15 @@ class GameScreen(QtWidgets.QWidget):
       self.normal_rules_window = NormalRules(self)
       self.endless_rules_window = EndlessRules(self)
       self.death_screen_window = DeathScreen(self.close_window, self.restart, self)
+      
+      # Get the dificulty level
+      self.normal_rules_window.easyButton.clicked.connect(lambda: self.set_difficulty("easy"))
+      self.normal_rules_window.normalButton.clicked.connect(lambda: self.set_difficulty("normal"))
+      self.normal_rules_window.hardButton.clicked.connect(lambda: self.set_difficulty("hard"))
+      
+      self.endless_rules_window.easyButton.clicked.connect(lambda: self.set_difficulty("easy"))
+      self.endless_rules_window.normalButton.clicked.connect(lambda: self.set_difficulty("normal"))
+      self.endless_rules_window.hardButton.clicked.connect(lambda: self.set_difficulty("hard"))
 
       # Initialize Timers
       self.game_timer = QtCore.QTimer()
@@ -85,7 +95,8 @@ class GameScreen(QtWidgets.QWidget):
    def start_normal_mode(self):
       # Start timers
       self.game_timer.start(30)
-      self.pose_timer.start(self.pose_time)
+      self.pose_timer.start(self.start_pose_time)
+      self.pose_time = self.start_pose_time
 
       # Initialize variables
       self.lives = 3
@@ -102,7 +113,7 @@ class GameScreen(QtWidgets.QWidget):
    def start_endless_mode(self):
       # Start timers
       self.game_timer.start(30)
-      self.pose_timer.start(self.pose_time)
+      self.pose_timer.start(self.start_pose_time)
 
       # Initialize variables
       self.score = 0
@@ -193,6 +204,8 @@ class GameScreen(QtWidgets.QWidget):
          self.move_status.setText(random.choice(self.success_phrases))
          self.move_status.setStyleSheet("QLabel {background-color: green;}")
          self.score += 1
+         if self.mode == "Normal" and self.pose_time > 1000:
+            self.pose_time -= 500
       else:
          self.move_status.setText(random.choice(self.failure_phrases))
          self.move_status.setStyleSheet("QLabel {background-color: red;}")
@@ -385,6 +398,15 @@ class GameScreen(QtWidgets.QWidget):
 
       return pose_info
 
+   def set_difficulty(self, dif):
+      if dif == "easy":
+         self.pose_time = 5000
+      elif dif == "normal":
+         self.pose_time = 3500
+      else:
+         self.pose_time = 2000
+      self.start_pose_time = self.pose_time
+      self.pose_timer.setInterval(self.pose_time)
 
 if __name__ == '__main__':
    # app = QtWidgets.QApplication(sys.argv)
