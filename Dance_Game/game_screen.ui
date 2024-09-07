@@ -64,7 +64,7 @@
          <family>Sans Serif Collection</family>
          <pointsize>16</pointsize>
          <weight>75</weight>
-         <italic>true</italic>
+         <italic>false</italic>
          <bold>true</bold>
         </font>
        </property>
@@ -83,7 +83,7 @@ color: white;
 }</string>
        </property>
        <property name="text">
-        <string>Pause</string>
+        <string>||</string>
        </property>
        <property name="icon">
         <iconset theme="pause">
